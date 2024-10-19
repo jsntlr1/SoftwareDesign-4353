@@ -1,19 +1,23 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
-#placeholder before dictionary implementation
+#placeholder before database implementation
 profiles = {}
 
-@app.route('/api/profile', methods = ['POST'])
+@app.route('/api/profile', methods = ['POST', 'OPTIONS'])
 def receive_profile():
-    data = request.get_json()
-    print("Received profile data:", data)
-    user_id = "user_1"
-    profiles[user_id] = data;
-    return jsonify({'message': 'Profile data received successfully'}), 200
+    if request.method == 'OPTIONS':
+        response = jsonify({'message': 'CORS preflight'})
+        response.status_code = 200
+        return response
+    elif request.method == 'POST':
+        data = request.get_json()
+        print("Received profile data:", data)
+        user_id = "user_1"
+        profiles[user_id] = data;
+        return jsonify({'message': 'Profile data received successfully'}), 200
 
 @app.route('/', methods=['GET'])
 def home():
