@@ -17,6 +17,15 @@ def login():
         username = request.form['username']
         password = request.form['password']
         return jsonify({"credentials": "received"})
+        
+@app.route('/eventhistory')
+def eventHistory():
+    userEvents = [] # represents the list of events queried from the database for a particular user
+    data = {}
+    for i in range(len(userEvents)):
+        data[str(i)] = userEvents[i]
+    
+    return jsonify(data)
 
 if __name__ == '__main__':
     from event_management import events
