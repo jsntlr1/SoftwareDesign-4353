@@ -9,6 +9,15 @@ CORS(app)
 app.register_blueprint(event_bp, url_prefix='/api')
 app.register_blueprint(volunteer_bp, url_prefix='/api')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        pass
+    elif request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        return jsonify({"credentials": "received"})
+
 if __name__ == '__main__':
     from event_management import events
     from volunteer_matching import volunteers
