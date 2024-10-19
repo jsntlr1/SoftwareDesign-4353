@@ -22,8 +22,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
 const volunteerName = ref('');
 const matchedEvent = ref('');
 const message = ref('');
+</script>
