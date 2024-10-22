@@ -1,15 +1,12 @@
 <template>
     <div id="app">
-        <EventManagementForm />
-        <VolunteerMatchingForm />
-        <LoginForm/>
-        <ProfileForm/>
+        <nav>
+            <router-link to="/">Home</router-link> |
+            <router-link to="/event-management">Event Management</router-link> |
+            <router-link to="/volunteer-matching">Volunteer Matching</router-link> |
+            <router-link to="/login">Login</router-link> |
+            <router-link to="/profile">Profile</router-link>
+        </nav>
+        <router-view></router-view>
     </div>
 </template>
-
-<script setup>
-import EventManagementForm from './components/EventManagement.vue'
-import VolunteerMatchingForm from './components/VolunteerMatching.vue'
-import LoginForm from './components/LoginForm.vue'
-import ProfileForm from './components/ProfileForm.vue'
-</script>

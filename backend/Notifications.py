@@ -1,48 +1,36 @@
-from flask import Flask
-from flask_mail import Mail, Message
-from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, request, jsonify, Blueprint
 from datetime import datetime, timedelta
+import logging
 
-app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+notifications_bp = Blueprint('notifications', __name__)
 
-app.config['MAIL_SERVER']= 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'your_email@address.com'
-app.config['MAIL_PASSWORD'] = 'your_password'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
+#temp test before database implementation
+notifications = [
+    {
+        'id': 1,
+        'user_id': 1,
+        'message': 'You have been assigned to Event 1.',
+        'timestamp': datetime.now(),
+        'read': False
+    },
+]
 
-mail = Mail(app)
+@notifications_bp.route('/mark_notification_read', methods=['POST'])
+def mark_notification_read():
+    data = request.get_json()
+    notification_id = data.get('notification_id')
+    for n in notifications:
+        if n['id'] == notification_id:
+            n['read'] = True
+            logging.info(f'Notification {notification_id} marked as read')
+            break
+    
+    return '', 204
 
-def send_email_notification(to_email, subject, message):
-    with app.app_context():
-        msg = Message(subject=subject, sender=app.config["MAIL_USERNAME"], recipients=[to_email])
-        msg.body = message
-        try:
-            mail.send(msg)
-            print(f"Email notification sent to {to_email}")
-        except Exception as e:
-            print(f"ERROR sending email notification to {to_email}")
-
-#pip install APScheduler
-#send email at a specific time
-
-#send email 24 hours before event start
-def schedule_email_notification(to_email, subject, message, event_start_time):
-    scheduler = BackgroundScheduler()
-    reminder_time = event_start_time - timedelta(hours = 24)
-    if reminder_time <= datetime.now():
-        print(f"Reminder time {reminder_time} is in the past, rescheduling")
-        reminder_time = datetime.now() + timedelta(minutes=1)
-
-    scheduler.add_job(func=send_email_notification, trigger = "date", run_date = reminder_time, args=[to_email, subject, message])
-    scheduler.start()
-    print(f"Email scheduled for {reminder_time}")
-
-if __name__ == "__main__":
-    #email test
-    #to_email = "cpotabirkhoff@gmail.com"
-    #subject = "Test: Email in 1 minute"
-    #message = "This is a test email to be sent in 1 minute"
-    #schedule_email_notification(to_email, subject, message, datetime.now() + timedelta(minutes = 1))
-    app.run(debug=True)
+@notifications_bp.route('/get_notifications')
+def get_notifications():
+    user_id = request.args.get('user_id', 1)
+    unread = request.args.get('unread', 'false').lower() == 'true'
+    user_notifications = [n for n in notifications if n['user_id'] == int(user_id) and (not n['read'] if unread else True)]
+    return jsonify({'notifications': user_notifications})

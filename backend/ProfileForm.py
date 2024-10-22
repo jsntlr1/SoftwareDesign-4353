@@ -1,28 +1,22 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, request, jsonify, Blueprint
+import logging
 
-app = Flask(__name__)
-CORS(app)
+logging.basicConfig(level=logging.INFO)
+profile_bp = Blueprint('profile', __name__)
+
 #placeholder before database implementation
 profiles = {}
 
-@app.route('/api/profile', methods = ['POST', 'OPTIONS'])
+@profile_bp.route('/profile', methods = ['POST'])
 def receive_profile():
-    if request.method == 'OPTIONS':
-        response = jsonify({'message': 'CORS preflight'})
-        response.status_code = 200
-        return response
-    elif request.method == 'POST':
-        data = request.get_json()
-        print("Received profile data:", data)
-        user_id = "user_1"
-        profiles[user_id] = data;
-        return jsonify({'message': 'Profile data received successfully'}), 200
+    data = request.get_json()
+    if not data:
+        return jsonify({'ERROR: no data found'}), 400
 
-@app.route('/', methods=['GET'])
-def home():
-    return jsonify({'message': 'Flask server is running'}), 200
+    logging.info(f"Received profile data: {data}")
+    user_id = data.get('user_id', 'default_user')
+    profiles[user_id] = data
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    return jsonify({'messsage': 'Profile data received successfully'}), 201
+
 

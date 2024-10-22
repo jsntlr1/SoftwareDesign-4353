@@ -1,7 +1,7 @@
 <template>
     <div class="profile">
       <!--<h1>Profile</h1>-->
-      hello, {{ profile.fullName }}
+      Hello, {{ profile.fullName }}
   
       <!--Link to home-->
       <router-link to="/">Home</router-link>
@@ -74,20 +74,30 @@
         <!--Availability Date-->
         <div>
             <label for="availability">Availability:</label>
-            <DatePicker
-              v-model = "profile.availability"
-              multiple
+            <VueDatePicker
+              v-model = "selectedDate"
               :close-on-select="false"
-              format = "MM/dd/yyyy"
+              format="MM/dd/yyyy"
               placeholder = "Select availability"
               required
               />
-            <div class="selected-items">Selected Dates: {{ formattedDates.join(', ') }}</div>
+
+              <button type="button" @click="addDate">Save Date</button>
+
+              <div class="selected-items" v-if="profile.availability.length">
+                <p>Selected Dates:</p>
+                <ul>
+                  <li v-for="(date, index) in profile.availability" :key="index">
+                  {{ formatDate(date) }}
+                  <button type="button" @click="removeDate(index)">Remove</button>
+                  </li>
+                </ul>
+              </div>
         </div>
 
         <!--submit-->
         <div>
-          <button type="submit">Submit</button>
+          <button type="submit" :disables="!profile.availability.length" class="submitbtn">Submit</button>
         </div>
 
       </form>
@@ -97,10 +107,9 @@
   
   <script setup>
   import { ref } from 'vue';
-  import DatePicker from '@vuepic/vue-datepicker';
+  import VueDatePicker from '@vuepic/vue-datepicker';
   import '@vuepic/vue-datepicker/dist/main.css';
   import axios from 'axios';
-  import { computed } from 'vue';
   
   const profile = ref({
     fullName: "",
@@ -115,6 +124,7 @@
   });
   
   const multiSelected = ref([]);
+  const selectedDate = ref(null);
   const formSubmitted = ref(false);
   
   const states = [
@@ -122,29 +132,49 @@
     'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
     'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
     'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-  ];
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 
-  
-  const formattedDates = computed(() => {
-  const availability = profile.value.availability;
+  const addDate = () => {
+    if (selectedDate.value) {
+      if (!profile.value.availability.some((date) => date.getTime() === selectedDate.value.getTime())) {
+        profile.value.availability.push(new Date(selectedDate.value));
+        selectedDate.value = null;
+      } else {
+          alert("Date already added");
+      }
+    }else {
+        alert("You must select a date");
+    }
+  };
 
-  if (!Array.isArray(availability) || availability.length === 0) {
-    return [];
-  }
+  const removeDate = (index) => {
+    profile.value.availability.splice(index, 1);
+  };
 
-  return availability.map(date => {
-    return new Date(date).toLocaleDateString('en-US');
-  });
-});
 
-  
+  const formatDate = (date) => {
+    if(!(date instanceof Date)) return '';
+    const options = { month: '2-digit', day: '2-digit', year: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+  };
+
+
   const handleSubmit = async () => {
     console.log("Attempting to submit profile data...");
+    if (!profile.value.availability.length) {
+      alert("Must select a date.");
+      return;
+    }
     try {
       profile.value.skills = multiSelected.value;
+      const availabilityFormatted = profile.value.availability.map((date) => date.toISOString());
+
+      const profileData = {
+        ...profile.value,
+        availability: availabilityFormatted,
+      };
       
-      const response = await axios.post('http://localhost:5000/api/profile', profile.value)
+      const response = await axios.post('http://127.0.0.1:5000/api/profile', profileData);
       console.log('Profile data submitted successfully:', response.data);
       formSubmitted.value = true; 
       console.log("Profile Data:", profile.value)
@@ -152,11 +182,9 @@
       console.error("ERROR submitting profile data", error);
     }
   };
-
   </script>
   
   <style>
-  
     form {
       border: 1px solid black;
       padding: 20px;
@@ -206,6 +234,17 @@
   
     .selected-items {
       margin-top: 10px;
+    }
+
+    .submitbtn {
+      background-color: lightgreen;
+      padding: 5px 10px;
+      border-radius: 4px;
+      width: auto;
+    }
+
+    .submitbtn:hover {
+      background-color: green;
     }
   
   </style>
