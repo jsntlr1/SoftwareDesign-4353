@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS volunteers;
+CREATE TABLE volunteers(id SERIAL PRIMARY KEY, name VARCHAR(120), address1 VARCHAR(100), address2 VARCHAR(100), city VARCHAR(100), state VARCHAR(2) REFERENCES states(code), zip_code VARCHAR(9), preferences TEXT, availability DATE[], skills TEXT[]);

@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS volunteer_history;
+CREATE TABLE volunteer_history(id SERIAL PRIMARY KEY, volunteer_id INTEGER NOT NULL, event_id INTEGER NOT NULL, participation_date DATE DEFAULT CURRENT_DATE, FOREIGN KEY (volunteer_id) REFERENCES volunteers(id), FOREIGN KEY (event_id) REFERENCES events(id));
