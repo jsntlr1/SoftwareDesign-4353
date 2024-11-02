@@ -14,7 +14,22 @@ app.register_blueprint(volunteer_bp, url_prefix='/api')
 app.register_blueprint(notifications_bp, url_prefix='/api')
 app.register_blueprint(profile_bp, url_prefix='/api')
 
-
+conn = psycopg2.connect(
+        database="designproject",
+        user="postgres",
+        password="thechef",
+        host="localhost",
+        port="5432"
+    )
+cursor = conn.cursor()
+cursor.execute(
+        '''CREATE TABLE IF NOT EXISTS usercredentials (id varchar(100) PRIMARY KEY, password varchar(60));'''
+    )
+cursor.execute(
+        '''CREATE TABLE IF NOT EXISTS userprofile (fname varchar(15), lname varchar(25), address varchar(100), availability time);'''
+    )
+cursor.close()
+conn.close()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -32,9 +47,6 @@ def login():
         password = request.form['password']
     
         cursor = conn.cursor()
-        cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS usercredentials (id varchar(100) PRIMARY KEY, password varchar(60));'''
-        )
         cursor.execute(
             '''SELECT password FROM usercredentials WHERE username = (%s)''', (username,)
         )
