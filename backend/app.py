@@ -18,12 +18,34 @@ app.register_blueprint(profile_bp, url_prefix='/api')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    conn = psycopg2.connect(
+        database="database",
+        user="postgres",
+        password="password",
+        host="localhost",
+        port="5432"
+    )
     if request.method == 'GET':
-        return "Login page"
+        pass
     elif request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        return jsonify({"credentials": "received"})
+    
+        cursor = conn.cursor()
+        cursor.execute(
+            '''CREATE TABLE IF NOT EXISTS usercredentials (id varchar(100) PRIMARY KEY, password varchar(60));'''
+        )
+        cursor.execute(
+            '''SELECT password FROM usercredentials WHERE username = (%s)''', (username,)
+        )
+        login_success = 0
+        res = cursor.fetchone()
+        if (res and res[0] == password):
+            login_success = 1
+            
+        cursor.close()
+        conn.close()
+        return jsonify({"login": login_success})
         
 @app.route('/eventhistory')
 def eventHistory():
