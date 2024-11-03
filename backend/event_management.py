@@ -31,6 +31,7 @@ def get_events():
         cur.close()
         conn.close()
 
+
         return jsonify(event_list), 200
 
     except Exception as e:

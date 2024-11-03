@@ -6,7 +6,7 @@
         </div>
 
         <div>
-            <label for="eventDescription">Event Description:</label>
+            <label for="eventDescription">Event Description: (Min 10 chars)</label>
             <textarea id="eventDescription" v-model="eventDescription" required></textarea>
         </div>
 
@@ -18,10 +18,10 @@
         <div>
             <label for="requiredSkills">Required Skills:</label>
             <select id="requiredSkills" v-model="requiredSkills" multiple required>
-                <option value="communication">Communication (Placeholder)</option>
-                <option value="teamwork">Teamwork (Placeholder)</option>
-                <option value="leadership">Leadership (Placeholder)</option>
-                <option value="problem-solving">Problem Solving (Placeholder)</option>
+                <option value="communication">Communication</option>
+                <option value="teamwork">Teamwork</option>
+                <option value="leadership">Leadership</option>
+                <option value="problem-solving">Problem Solving</option>
             </select>
         </div>
 
@@ -53,8 +53,20 @@ const requiredSkills = ref([]);
 const urgency = ref('');
 const eventDate = ref('');
 
-const submitForm = () => {
+//validations
+const isFormValid = computed(() => 
+    eventName.value &&
+    eventDescription.value.length >= 10 &&
+    location.value &&
+    requiredSkills.value &&
+    urgency.value &&
+    eventDate.value
+);
 
+const submitForm = () => {
+    if (!isFormValid.value) {
+        return;
+    }
     console.log({
         eventName: eventName.value,
         eventDescription: eventDescription.value,
