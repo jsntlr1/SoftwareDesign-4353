@@ -33,7 +33,6 @@
             <a href="#" class="dropdown-item text-center" @click.prevent="viewAllNotifications"><u>View All Notifications</u></a>
           </div>
         </li>
-        <li><a href="#">Settings</a></li>
       </ul>
     </nav>
 

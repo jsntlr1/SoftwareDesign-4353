@@ -79,7 +79,6 @@
               :close-on-select="false"
               format="MM/dd/yyyy"
               placeholder = "Select availability"
-              required
               />
 
               <button type="button" @click="addDate">Save Date</button>

@@ -1,38 +1,28 @@
 <template>
     <div class="login">
       <div class="login-box">
-        <h1>{{ isRegistering ? "Register" : "Login" }} </h1>
+        <h1>Login</h1>
   
         <form @submit.prevent="handleSubmit">
-  
-            <!--Email-->
             <div>
                 <label for="email">Email:</label>
                 <input type="email" id="email" v-model="email" required />
             </div>
   
-            <!--Password-->
             <div>
                 <label for="password">Password:</label>
                 <input type="password" id="password" v-model="password" required />
             </div>
-  
-            <!--Confirm Password for registration-->
-            <div v-if="isRegistering">
-                <label for="confirmPassword"> Confirm Password:</label>
-                <input type="password" id="confirmPassword" v-model="confirmPassword" required />
-            </div>
-            <!--Error-->
+            
             <p v-if="errorMessage" class="error-message"> {{ errorMessage }}</p>
   
-            <!--Submit-->
-            <button type="submit"> {{ isRegistering ? "Register" : "Login" }}</button>
+            
+            <button type="submit">Login</button>
         </form>
   
         <!--Switch between login and register-->
         <p class="toggle-link">
-            <a href="#" @click.prevent="toggleForm"> {{ isRegistering ? "Already have an account? Login here." : "Don't have an account? Register here." }}
-            </a>
+            <router-link to="/register">Click here to register</router-link>
         </p>
       </div>
     </div>
@@ -40,49 +30,31 @@
   
   <script setup>
   import { ref } from "vue";
+  import { useRouter } from 'vue-router';
   
-  const isRegistering = ref(false);
   const email = ref("");
   const password = ref("");
-  const confirmPassword = ref("")
   const errorMessage = ref("");
-  
-  function toggleForm() {
-    isRegistering.value = !isRegistering.value;
-    clearForm();
-  }
-  
+  const router = useRouter();
+ 
   function handleSubmit() {
-    if (isRegistering.value) {
-        if (password.value !== confirmPassword.value) {
-            errorMessage.value = "Passwords do not match";
-            return;
-        }
-  
-        console.log("Registered:", {
-            email: email.value,
-            password: password.value,
-        });
-        alert("Registration Success, please log in.");
-  
-        isRegistering.value = false;
-        clearForm();
-    } else {
-        console.log("Logged in:", {
-            email: email.value,
-            password: password.value,
-        });
-        alert("Login success");
-        clearForm();
+    if (!email.value || !password.value) {
+        errorMessage.value = "Enter email and password";
+        return;
     }
-  }
-  
-  function clearForm() {
+
+    console.log("Loggin in:", {
+        email: email.value,
+        password: password.value,
+    });
+
+    alert("Login successful");
     email.value = "";
     password.value = "";
-    confirmPassword.value = "";
     errorMessage.value = "";
+    router.push('/') //homepage
   }
+
   </script>
   
   <style>
