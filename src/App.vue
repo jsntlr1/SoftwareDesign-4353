@@ -11,20 +11,3 @@
         <router-view></router-view>
     </div>
 </template>
-
-<script setup>
-import { reactive } from 'vue';
-
-const authState = reactive ({
-    isLoggedIn: false 
-});
-
-function login() {
-    authState.isLoggedIn = true;
-}
-
-function logout() {
-    authState.isLoggedIn = false;
-}
-
-</script>

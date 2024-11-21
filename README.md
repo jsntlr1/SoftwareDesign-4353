@@ -2,6 +2,13 @@
 
 ## Project setup
 ```
+virtual environment:
+1. navigate to backend folder
+2. python -m venv venv
+3. source venv/bin/activate
+
+install dependencies:
+pip install -r requirements.txt
 npm install
 ```
 

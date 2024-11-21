@@ -4,7 +4,7 @@ import EventManagementForm from '@/components/EventManagement.vue';
 import VolunteerMatchingForm from '@/components/VolunteerMatching.vue';
 import LoginForm from '@/components/LoginForm.vue';
 import ProfileForm from '@/components/ProfileForm.vue';
-import Register from '@/components/Register.vue';
+import RegisterForm from '@/components/RegisterForm.vue';
 
 const routes = [
     { path: '/', name: 'Home', component: HomePage },
@@ -12,7 +12,7 @@ const routes = [
     { path: '/event-management', name: 'EventManagement', component: EventManagementForm },
     { path: '/volunteer-matching', name: 'VolunteerMatching', component: VolunteerMatchingForm },
     { path: '/login', name: 'Login', component: LoginForm },
-    { path: '/register', name: 'Register', component: Register },
+    { path: '/register', name: 'Register', component: RegisterForm },
     { path: '/', redirect: '/login'}
 ];
 
