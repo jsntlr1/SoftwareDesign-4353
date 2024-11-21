@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 const eventName = ref('');
 const eventDescription = ref('');
@@ -54,17 +54,19 @@ const urgency = ref('');
 const eventDate = ref('');
 
 //validations
-const isFormValid = computed(() => 
-    eventName.value &&
-    eventDescription.value.length >= 10 &&
-    location.value &&
-    requiredSkills.value &&
-    urgency.value &&
-    eventDate.value
-);
+const isFormValid = () => {
+    return (
+        eventName.value &&
+        eventDescription.value.length >= 10 &&
+        location.value &&
+        requiredSkills.value.length > 0 &&
+        urgency.value &&
+        eventDate.value
+    );
+};
 
 const submitForm = () => {
-    if (!isFormValid.value) {
+    if (!isFormValid()) {
         return;
     }
     console.log({
