@@ -44,7 +44,3 @@ def create_volunteer_profile():
     except Exception as e:
         logging.error(f"Error creating volunteer from profile: {e}")
         return jsonify({'error': 'ERROR while creating volunteer profile'})
-
-
-
-

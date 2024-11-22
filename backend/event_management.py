@@ -1,8 +1,53 @@
 from flask import Blueprint, request, jsonify
-import psycopg2
 from db import get_db_connection
+from datetime import datetime
 
 event_bp = Blueprint('event', __name__)
+
+@event_bp.route('/events', methods=['POST'])
+def create_event():
+    try:
+        data = request.get_json()
+        event_name = data.get('eventName')
+        event_description = data.get('eventDescription')
+        location = data.get('location')
+        required_skills = data.get('requiredSkills')
+        urgency = data.get('urgency')
+        event_date_str = data.get('eventDate')
+
+        if not all([event_name, event_description, location, required_skills, urgency, event_date_str]):
+            return jsonify({'message': 'Missing required fields in event form'}), 400
+        
+        if not isinstance(required_skills, list):
+            return jsonify({'message': 'Required skills must be a list'}), 400
+
+        try:
+            event_date = datetime.fromisoformat(event_date_str.replace('Z', '+00:00'))
+        except ValueError:
+            return jsonify({'message': 'Invalid date format'}), 400
+
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = """
+        INSERT INTO events (name, description, location, required_skills, urgency, date) 
+        VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
+        """
+
+        cur.execute(query, (event_name, event_description, location, required_skills, urgency, event_date))
+        event_id = cur.fetchone()[0]
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Event created successfully'}), 201
+    except Exception as e:
+        print(f'Error creating event: {e}')
+        return jsonify({'message': 'ERROR while creating event'}), 500
+    
+
 
 @event_bp.route('/events', methods=['GET'])
 def get_events():

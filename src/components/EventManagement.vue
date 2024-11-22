@@ -1,4 +1,9 @@
 <template>
+
+    <div v-if="formSubmitted">
+        &#128077; Success!
+    </div>
+
     <form @submit.prevent="submitForm">
         <div>
             <label for="eventName">Event Name:</label>
@@ -45,6 +50,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import axios from 'axios';
 
 const eventName = ref('');
 const eventDescription = ref('');
@@ -52,6 +58,7 @@ const location = ref('');
 const requiredSkills = ref([]);
 const urgency = ref('');
 const eventDate = ref('');
+const formSubmitted = ref(false);
 
 //validations
 const isFormValid = () => {
@@ -65,25 +72,37 @@ const isFormValid = () => {
     );
 };
 
-const submitForm = () => {
+const submitForm = async () => {
     if (!isFormValid()) {
         return;
     }
-    console.log({
+
+    const formattedEventDate = new Date(eventDate.value).toISOString();
+
+    const eventData = {
         eventName: eventName.value,
         eventDescription: eventDescription.value,
         location: location.value,
         requiredSkills: requiredSkills.value,
         urgency: urgency.value,
-        eventDate: eventDate.value
-    });
+        eventDate: formattedEventDate,
+    };
 
-    eventName.value = '';
-    eventDescription.value = '';
-    location.value = '';
-    requiredSkills.value = [];
-    urgency.value = '';
-    eventDate.value = '';
+    try {
+        const response = await axios.post('http://localhost:5000/api/events', eventData)
+        console.log('Event submitted successfully:', response.data)
+        formSubmitted.value = true;
+
+        eventName.value = '';
+        eventDescription.value = '';
+        location.value = '';
+        requiredSkills.value = [];
+        urgency.value = '';
+        eventDate.value = '';
+    }catch (error) {
+        console.error("ERROR submitting event:", error);
+        alert("Error occurred while trying to submit an event")
+    }
 };
 </script>
 
