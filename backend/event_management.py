@@ -22,7 +22,7 @@ def create_event():
             return jsonify({'message': 'Required skills must be a list'}), 400
 
         try:
-            event_date = datetime.fromisoformat(event_date_str.replace('Z', '+00:00'))
+            event_date = datetime.strptime(event_date_str, '%Y-%m-%d').date()
         except ValueError:
             return jsonify({'message': 'Invalid date format'}), 400
 
@@ -42,7 +42,7 @@ def create_event():
         cur.close()
         conn.close()
 
-        return jsonify({'message': 'Event created successfully'}), 201
+        return jsonify({'message': 'Event created successfully', 'event_id': event_id}), 201
     except Exception as e:
         print(f'Error creating event: {e}')
         return jsonify({'message': 'ERROR while creating event'}), 500

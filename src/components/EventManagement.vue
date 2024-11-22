@@ -77,7 +77,7 @@ const submitForm = async () => {
         return;
     }
 
-    const formattedEventDate = new Date(eventDate.value).toISOString();
+    const formattedEventDate = eventDate.value;
 
     const eventData = {
         eventName: eventName.value,
