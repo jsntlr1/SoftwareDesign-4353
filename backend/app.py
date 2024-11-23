@@ -4,6 +4,7 @@ from event_management import event_bp
 from volunteer_matching import volunteer_bp
 from Notifications import notifications_bp
 from ProfileForm import profile_bp
+from generate_pdf import pdf_bp
 from db import get_db_connection
 import logging
 
@@ -15,6 +16,7 @@ app.register_blueprint(event_bp, url_prefix='/api')
 app.register_blueprint(volunteer_bp, url_prefix='/api')
 app.register_blueprint(notifications_bp, url_prefix='/api')
 app.register_blueprint(profile_bp, url_prefix='/api')
+app.register_blueprint(pdf_bp, url_prefix='/api')
 
 def init_db():
     try:

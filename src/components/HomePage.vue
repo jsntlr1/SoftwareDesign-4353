@@ -36,6 +36,11 @@
       </ul>
     </nav>
 
+    <div class="button-container">
+    <button class="big-button" @click="downloadVolunteerReport">Volunteer Report</button>
+    <button class="big-button" @click="downloadEventReport">Event Report</button>
+    </div>
+
     <!-- pop up to display past notifications-->
     <div v-if="showAllNotifications" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
@@ -57,6 +62,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 export default {
   name: 'HomePage',
   setup() {
@@ -121,6 +127,54 @@ export default {
       showAllNotifications.value = false;
     };
 
+    const downloadEventReport = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/generate-event-report', {
+          responseType: 'blob',
+        });
+
+  
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'event_report.pdf');
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error generating the report:", error);
+        alert('Failed to download the report. Please try again.');
+      }
+    };
+
+    const downloadVolunteerReport = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/generate-volunteer-report', {
+          responseType: 'blob',
+        });
+
+  
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'volunteer_report.pdf');
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error generating the report:", error);
+        alert('Failed to download the report. Please try again.');
+      }
+    };
+
     onMounted (() => {
       fetchUnreadNotifications();
     });
@@ -135,6 +189,8 @@ export default {
       markAsRead,
       viewAllNotifications,
       closeModal,
+      downloadEventReport,
+      downloadVolunteerReport,
     };
   },
 };
@@ -279,6 +335,31 @@ nav ul li a.active {
 
 .modal-content button {
   margin-top: 20px;
+}
+
+.button-container {
+  height: 100vh;
+  width: 95vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  gap: 20px;
+}
+
+.big-button {
+  background-color: #4caf50;
+  color: white;
+  font-size: 20px;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.big-button:hover {
+  background-color: #45a049;
 }
 
 /* Media Query for Smaller Screens */
