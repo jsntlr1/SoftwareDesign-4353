@@ -2,7 +2,7 @@ from flask import Blueprint, send_file
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
-from db import get_db_connection
+from .db import get_db_connection
 import logging
 import datetime
 
